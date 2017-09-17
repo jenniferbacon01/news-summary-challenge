@@ -12,8 +12,6 @@
       var ourData = JSON.parse(ourRequest.responseText);
       newsDataObjArray = ourData.response.results;
       that.newsDataObjArray = newsDataObjArray;
-      // console.log(that);
-      // console.log(that.newsDataObjArray)
       that.showHeadlines(doc);
       that.listenForHashChanges();
     };
@@ -74,12 +72,13 @@
   Page.prototype.showArticleSummary = function(doc = document){
     var newsId = this._getNewsIdFromUrl(doc.location);
     var newsTitle = this.newsDataObjArray[newsId].webTitle;
+    var newsUrl = this.newsDataObjArray[newsId].webUrl;
     var htmlString = "<h1>" + newsTitle + "</h1><ul>"
     var array = this.currentSummarySentencesArray;
     for (var i = 0; i <array.length; i++){
       htmlString += " " + array[i];
      };
-    htmlString += "</ul><br><br><a href='#news/" + parseInt(newsId) + "/full-article'>Full Article</a>"
+    htmlString += "</ul><br><br><a href='" + newsUrl + "'>Full Article</a>"
     doc.getElementById('news').innerHTML = htmlString;
   };
 
