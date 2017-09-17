@@ -28,6 +28,8 @@
         + "<li><div>The Nixon-Kennedy presidential debates: from the archive, 1960</div></li>"
         + "<li><div>Theresa May accused at PMQs of running scared from TV debates</div></li></ul>";
       pass = documentDouble.getElementById("news").innerHTML === string;
+      console.log(string);
+      console.log(documentDouble.getElementById("news").innerHTML);
       assert.isTrue(pass);
       formatOutput('testPageLoadsHeadlines', pass)
     }, 3000);

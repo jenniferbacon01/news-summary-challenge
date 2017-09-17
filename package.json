@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/jenniferbacon01/news-summary-challenge#readme",
   "dependencies": {
+    "browserify": "^14.4.0",
     "http-server": "^0.10.0"
   }
 }
