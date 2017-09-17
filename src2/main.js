@@ -1,20 +1,20 @@
 (function(exports) {
   function Page (){
   };
-  Page.prototype.getNewsFromApi = function() {
+  Page.prototype.getNewsFromApi = function(guardianApi= "http://news-summary-api.herokuapp.com/guardian?apiRequestUrl=http://content.guardianapis.com/search", doc = document) {
     var newsDataObjArray;
     var that = this;
     var ourRequest = new XMLHttpRequest();
     // https://content.guardianapis.com/search?api-key=3e8ee72b-5cd3-4951-9e66-d32ada386a74
     // https://content.guardianapis.com/search?q=debates&api-key=test
-    ourRequest.open('GET', 'http://news-summary-api.herokuapp.com/guardian?apiRequestUrl=http://content.guardianapis.com/search')
+    ourRequest.open('GET', guardianApi)
     ourRequest.onload = function() {
       var ourData = JSON.parse(ourRequest.responseText);
       newsDataObjArray = ourData.response.results;
       that.newsDataObjArray = newsDataObjArray;
       // console.log(that);
       // console.log(that.newsDataObjArray)
-      that.showHeadlines();
+      that.showHeadlines(doc);
       that.listenForHashChanges();
     };
     ourRequest.send();
@@ -27,13 +27,8 @@
     for (var i = 0; i <array.length; i++){
       htmlString += ("<li><div><a href='#news/" + i + "'>" + array[i].webTitle + "</div></li>");
      };
-      // this.newsDataObjArray.forEach( function(newsDataObj){
-      //   // <a href='#news/0'>
-      //   htmlString += ("<li><div>" + newsDataObj.webTitle + "</div></li>");
-      // });
-      htmlString += "</ul>"
-      // console.log(htmlString);
-      doc.getElementById('news').innerHTML = htmlString;
+    htmlString += "</ul>";
+    doc.getElementById('news').innerHTML = htmlString;
   };
 
   Page.prototype.listenForHashChanges = function(){
@@ -43,8 +38,7 @@
 
   Page.prototype.getSummaryFromApi = function(doc = document) {
     var newsId = this._getNewsIdFromUrl(doc.location);
-    var newsObj = this.newsDataObjArray[newsId];
-    var newsUrl = newsObj.webUrl;
+    var newsUrl = this.newsDataObjArray[newsId].webUrl;
     var apiUrl = "http://news-summary-api.herokuapp.com/aylien?apiRequestUrl=https://api.aylien.com/api/v1/summarize?url=" + newsUrl;
     var that = this;
     var ourRequest2 = new XMLHttpRequest();
@@ -55,15 +49,12 @@
       that.showArticleSummary();
     };
     ourRequest2.send();
+  };
     // var AYLIENTextAPI = require('aylien_textapi');
     // var textapi = new AYLIENTextAPI({
     //   application_id: "7ab590cd",
     //   application_key: "04144cb9bb6d4e1bcc5a2dfe205e95e6"
     // });
-    // var newsId = this._getNewsIdFromUrl(doc.location);
-    // var newsObj = this.newsDataObjArray[newsId];
-    // var newsUrl = newsObj.webUrl;
-    // console.log(newsUrl);
     // textapi.summarize({
     //   url: newsUrl,
     //   sentences_number: 3
@@ -74,25 +65,23 @@
     //     });
     //   }
     // });
-  }
+
 
   Page.prototype._getNewsIdFromUrl = function(location) {
     return parseInt(location.hash.split("#")[1].substring(5));
   };
 
   Page.prototype.showArticleSummary = function(doc = document){
-    var htmlString = "<ul>"
-    console.log(this.currentSummarySentencesArray);
+    var newsId = this._getNewsIdFromUrl(doc.location);
+    var newsTitle = this.newsDataObjArray[newsId].webTitle;
+    var htmlString = "<h1>" + newsTitle + "</h1><ul>"
     var array = this.currentSummarySentencesArray;
     for (var i = 0; i <array.length; i++){
       htmlString += " " + array[i];
      };
-    htmlString += "</ul>"
-    console.log(htmlString);
+    htmlString += "</ul><br><br><a href='#news/" + parseInt(newsId) + "/full-article'>Full Article</a>"
     doc.getElementById('news').innerHTML = htmlString;
   };
-
-
 
   exports.Page = Page;
 })(this);
