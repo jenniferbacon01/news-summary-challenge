@@ -1,15 +1,17 @@
 (function(exports) {
   function Page (){
   };
-  Page.prototype.getNewsFromApi = function(guardianApi= "http://news-summary-api.herokuapp.com/guardian?apiRequestUrl=http://content.guardianapis.com/search", doc = document) {
+  Page.prototype.getNewsFromApi = function(guardianApi= "https://content.guardianapis.com/search?api-key=test&show-fields=all", doc = document) {
     var newsDataObjArray;
     var that = this;
     var ourRequest = new XMLHttpRequest();
+    // http://news-summary-api.herokuapp.com/guardian?apiRequestUrl=http://content.guardianapis.com/search?show-fields=all
     // https://content.guardianapis.com/search?api-key=3e8ee72b-5cd3-4951-9e66-d32ada386a74
-    // https://content.guardianapis.com/search?q=debates&api-key=test
+    // https://content.guardianapis.com/search?api-key=test&show-fields=all
     ourRequest.open('GET', guardianApi)
     ourRequest.onload = function() {
       var ourData = JSON.parse(ourRequest.responseText);
+      console.log(ourRequest);
       newsDataObjArray = ourData.response.results;
       that.newsDataObjArray = newsDataObjArray;
       that.showHeadlines(doc);
@@ -23,7 +25,7 @@
     console.log(this.newsDataObjArray);
     var array = this.newsDataObjArray;
     for (var i = 0; i <array.length; i++){
-      htmlString += ("<li><div><a href='#news/" + i + "'>" + array[i].webTitle + "</div></li>");
+      htmlString += ("<img src= " + array[i].fields.thumbnail + "><li><div><a href='#news/" + i + "'>" + array[i].webTitle + "</div></li>");
      };
     htmlString += "</ul>";
     doc.getElementById('news').innerHTML = htmlString;
@@ -73,7 +75,8 @@
     var newsId = this._getNewsIdFromUrl(doc.location);
     var newsTitle = this.newsDataObjArray[newsId].webTitle;
     var newsUrl = this.newsDataObjArray[newsId].webUrl;
-    var htmlString = "<h1>" + newsTitle + "</h1><ul>"
+    var newsPic = this.newsDataObjArray[newsId].fields.thumbnail;
+    var htmlString = "<h1>" + newsTitle + "</h1><img src= " + newsPic + "><ul>"
     var array = this.currentSummarySentencesArray;
     for (var i = 0; i <array.length; i++){
       htmlString += " " + array[i];
